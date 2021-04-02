@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MimeTypes" Version="2.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Telerik.UI.for.AspNet.Core.Trial" Version="2021.1.224" />
   </ItemGroup>
 
@@ -14,6 +18,10 @@
 
   <ItemGroup>
     <None Include="wwwroot\Content\coloricons-sprite.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FileSystemModels\FileSystemModels.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using FileBrowser.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,13 +17,15 @@ namespace FileBrowser
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            FileSystemManager.MapRootItem(ConfigurationGetter.GetFileStorageRootDirectory());
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddControllersWithViews();
             services.AddKendo();
         }

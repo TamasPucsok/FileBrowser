@@ -1,10 +1,10 @@
-﻿@using Kendo.Mvc.UI; 
+﻿@using Kendo.Mvc.UI;
 
 <div class="demo-section k-content">
     @(Html.Kendo().TreeView()
                 .Name("treeview")
                 .Items(treeview =>
-                {
+                {                 
                     treeview.Add().Text("My Web Site")
                         .SpriteCssClasses("folder")
                         .Expanded(true)
@@ -61,6 +61,8 @@
                 })
     )
 </div>
+
+
 
 <style>
     #treeview .k-sprite {
