@@ -19,14 +19,13 @@ namespace FileSystemModels
             this.parent = parent;
 
             this.children = new List<FileSystemItemBase>();
-            this.address = CalculateAddress();
+            CalculateAddresses();
         }
 
         public string Address { get => address; protected set => address = value; }
         public FileSystemItemBase Parent { get => parent; }
         public List<FileSystemItemBase> Children { get => children; }
 
-        #region Abstracts
         public abstract string Name { get; }
 
         public abstract string GetPath();
@@ -44,22 +43,24 @@ namespace FileSystemModels
         /// <returns>The full path to a possible new copy of the file.</returns>
         protected abstract string GetNewCopyName();
 
-        #endregion
-
         public virtual void ProcessDownload() { }
 
         public virtual void ProcessUpload() { }
 
         /// <summary>
-        /// Calculates the address of the item based on the Children routing.
+        /// Calculates the address of the item based on the Parent routing.
         /// </summary>
         /// <returns>The address of the item.</returns>
-        public string CalculateAddress()
+        public void CalculateAddresses()
         {
             if (parent == null)
-                return "0";
+            {
+                Address = "0";
+                return;
+            }
 
-            return parent.Address + "." + parent.Children.FindIndex(x => x == this);
+            Address = parent.Address + "." + parent.Children.FindIndex(x => x == this);
+            Children.ForEach(x => x.CalculateAddresses());
         }
 
         /// <summary>

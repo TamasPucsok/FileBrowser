@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FileBrowser.Providers
+namespace FileBrowser.Common
 {
     /// <summary>
     /// Provides data regarding directories.

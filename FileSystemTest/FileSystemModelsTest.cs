@@ -1,5 +1,6 @@
 ﻿using FileBrowser;
 using FileSystemModels;
+using FileSystemModels.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -185,6 +186,46 @@ namespace FileSystemTest
             Assert.IsTrue(root.Children[0].Children[0].Parent == root.Children[0]);
 
             testHelper.CleanUpTestDirectory();
+        }
+
+        [TestMethod]
+        public void RenameFileTest()
+        {
+            TestHelper testHelper = new();
+            testHelper.SetUpTestDirectory();
+
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test.txt").Close();
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test1.txt").Close();
+
+            FileSystemManager.MapRootItem(testHelper.TestDirInfo.FullName);
+            DirectoryItem root = FileSystemManager.RootItem;
+
+            root.Children.Where(x=>x.Name == "test.txt").FirstOrDefault().Rename("test2.txt");
+            Assert.IsTrue(root.Children.Any(x => x.Name == "test2.txt"));
+
+            Action RenameAction = delegate () { root.Children.Where(x => x.Name == "test2.txt").FirstOrDefault().Rename("test1.txt"); };
+            Assert.ThrowsException<NameAlreadyTakenException>(RenameAction);
+        }
+
+        [TestMethod]
+        public void RenameDirectoryTest()
+        {
+            TestHelper testHelper = new();
+            testHelper.SetUpTestDirectory();
+
+            testHelper.TestDirInfo.CreateSubdirectory("test");
+            testHelper.TestDirInfo.CreateSubdirectory("test2");
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test\\test.txt").Close();
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test\\test2.txt").Close();
+
+            FileSystemManager.MapRootItem(testHelper.TestDirInfo.FullName);
+            DirectoryItem root = FileSystemManager.RootItem;
+
+            root.Children[0].Rename("test1");
+            Assert.IsTrue(root.Children[1].Name == "test1" && root.Children[1].Children.Count == 2);
+
+            Action RenameAction = delegate () { root.Children[1].Rename("test1"); };
+            Assert.ThrowsException<NameAlreadyTakenException>(RenameAction);
         }
     }
 }

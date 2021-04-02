@@ -1,4 +1,5 @@
 ﻿using FileSystemModels.Common;
+using FileSystemModels.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -117,7 +118,18 @@ namespace FileSystemModels
 
         public override void Rename(string newName)
         {
-            Microsoft.VisualBasic.FileIO.FileSystem.RenameDirectory(Info.FullName, newName);
+            string newFullName = Path.Combine(parent.GetPath(), newName);
+
+            if (Directory.Exists(newFullName))
+                throw new NameAlreadyTakenException();
+            else
+            {
+                new DirectoryHandler().DirectoryDeepCopy(GetPath(), newFullName);
+
+                new DirectoryItem(newFullName, Parent).MapDirectoryChildren();
+
+                this.Delete();
+            }
         }
 
         public override string GetPath()

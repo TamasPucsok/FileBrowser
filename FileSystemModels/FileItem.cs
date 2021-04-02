@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileSystemModels.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -65,6 +66,7 @@ namespace FileSystemModels
                 }
 
                 RemoveReferencesInParent();
+                parent.CalculateAddresses();
                 return true;
             }
 
@@ -81,7 +83,7 @@ namespace FileSystemModels
                     RemoveReferencesInParent();
                     item.Children.Add(this);
                     parent = item;
-                    CalculateAddress();
+                    CalculateAddresses();
 
                     return true;
                 }
@@ -95,7 +97,18 @@ namespace FileSystemModels
 
         public override void Rename(string newName)
         {
-            Microsoft.VisualBasic.FileIO.FileSystem.RenameFile(Info.FullName, newName);
+            string newFullName = Path.Combine(parent.GetPath(), newName);
+
+            if (File.Exists(newFullName))
+                throw new NameAlreadyTakenException();
+            else
+            {
+                File.Copy(Info.FullName, newFullName);
+
+                new FileItem(newFullName, Parent);
+
+                this.Delete();
+            }
         }
 
         public override string GetPath()

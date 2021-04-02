@@ -28,5 +28,7 @@ namespace FileBrowser
         {
             rootItem = MapFileStructure(path);
         }
+
+
     }
 }

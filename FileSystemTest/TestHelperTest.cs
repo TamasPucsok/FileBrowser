@@ -1,6 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FileBrowser;
+using FileSystemModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +14,7 @@ namespace FileSystemTest
     public class TestHelperTest
     {
         [TestMethod]
-        public void TestFolderCreationAndRemoval()
+        public void TestFolderCreationAndRemovalTest()
         {
             TestHelper testHelper = new();
             testHelper.SetUpTestDirectory();

@@ -1,6 +1,23 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["rootAddress"] = FileSystemManager.RootItem.Address;
+    ViewData["rootHash"] = FileSystemManager.RootItem.GetPath().GetHashCode();
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="UploadItem">
+    <div class="form-group">
+        <div class="col-md-10">
+            <p>Upload files here:</p>
+            <input type="file" name="files" multiple />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <input type="hidden" name="targetDir" value=@ViewData["rootAddress"] />
+            <input type="hidden" name="hash" value=@ViewData["rootHash"] />
+            <input type="submit" value="UploadItem" />
+        </div>
+    </div>
+
+
+
+</form>

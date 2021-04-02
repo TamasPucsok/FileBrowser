@@ -5,11 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bootstrap" Version="4.6.0" />
+    <PackageReference Include="KendoUIProfessional.Trial" Version="2021.1.330" />
     <PackageReference Include="MimeTypes" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Telerik.UI.for.AspNet.Core.Trial" Version="2021.1.224" />
+    <PackageReference Include="Telerik.DataSource.Trial" Version="2.0.9" />
+    <PackageReference Include="Telerik.UI.for.AspNet.Core.Trial" Version="2021.1.330" />
   </ItemGroup>
 
   <ItemGroup>

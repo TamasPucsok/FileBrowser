@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FileBrowser.Providers
+namespace FileBrowser.Common
+
 {
     /// <summary>
     /// Static class to provide configuration data when needed.

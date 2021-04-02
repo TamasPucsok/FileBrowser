@@ -1,4 +1,4 @@
-﻿using FileBrowser.Providers;
+﻿using FileBrowser.Common;
 using FileBrowser.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using FileSystemModels;
+using Kendo.Mvc.UI;
 
 namespace FileBrowser.Controllers
 {
@@ -26,6 +27,7 @@ namespace FileBrowser.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.inlineItemTreeData = GetTreeViewItemData();
             return View();
         }
 
@@ -45,10 +47,21 @@ namespace FileBrowser.Controllers
             return View();
         }
 
-        //[HttpGet("DownloadItem")]
-        public async Task<FileStreamResult> DownloadItem(string address, int pathHash, bool bOpenInBrowser )
+        public async Task<ActionResult> GetSize()
         {
-            FileSystemItemBase item = FileSystemManager.RootItem.FindSubItem(address,ref pathHash);
+            return View();
+        }
+
+        //[HttpGet("DownloadItem")]
+        public FileStreamResult DownloadItem(string address, int pathHash, bool bOpenInBrowser)
+        {
+            if (!new Validator().DownloadItem_Validate(address, pathHash))
+            {
+                return null;
+            }
+
+
+            FileSystemItemBase item = FileSystemManager.RootItem.FindSubItem(address, ref pathHash);
 
             item.ProcessDownload();
 
@@ -65,12 +78,12 @@ namespace FileBrowser.Controllers
         }
 
         //[HttpPost("UploadFile")]
-        public async Task<IActionResult> UploadItem(string address, int pathHash, List<IFormFile> files)
+        public async Task<IActionResult> UploadItem(string targetDir, int hash, List<IFormFile> files)
         {
             var size = files.Sum(x => x.Length);
 
-            FileSystemItemBase item = FileSystemManager.RootItem.FindSubItem(address, ref pathHash);
-            if (item is DirectoryItem dirItem)
+            FileSystemItemBase item = FileSystemManager.RootItem.FindSubItem(targetDir, ref hash);
+            if (item is DirectoryItem dirItem && new Validator().UploadItem_Validate(targetDir, hash, files))
             {
                 var filePaths = new List<string>();
                 foreach (var formFile in files)
@@ -83,7 +96,7 @@ namespace FileBrowser.Controllers
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await formFile.CopyToAsync(stream);
-                            new FileItem(filePath, dirItem);
+                            new FileItem(filePath, dirItem).ProcessUpload();
                         }
                     }
                 }
@@ -94,7 +107,7 @@ namespace FileBrowser.Controllers
             return BadRequest();
         }
 
-        //public async Task<ActionResult> DownloadItem()
+        //public async Task<ActionResult> Download()
         //{
         //    FileInfo fInfo = new("E:\\Works\\Programming\\FileBrowser\\FileBrowser\\FileStorage\\CV.pdf");
 
@@ -109,5 +122,10 @@ namespace FileBrowser.Controllers
         //    else
         //        return File(fstream, mimeType);
         //}
+
+        private List<TreeViewItemModel> GetTreeViewItemData()
+        {
+            return FileSystemManager.RootItem.BuildTreeViewModel();
+        }
     }
 }
