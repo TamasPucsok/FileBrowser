@@ -1,7 +1,6 @@
 using FileBrowser;
 using FileSystemModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 using System.Linq;
 
 namespace FileSystemTest
@@ -28,7 +27,7 @@ namespace FileSystemTest
             Assert.IsTrue(
                 rootFullName == testDirFullName
                 && root.Children.Count == 3
-                && root.Children.All(x=>x.Name.Contains("test"))
+                && root.Children.All(x => x.Name.Contains("test"))
                 );
 
             testHelper.CleanUpTestDirectory();

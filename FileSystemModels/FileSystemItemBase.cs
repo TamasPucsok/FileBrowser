@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FileSystemModels
 {
@@ -79,14 +77,9 @@ namespace FileSystemModels
                 return this;
             }
 
-            bool bTargetIsThisWay = true;
-            for(int i = 0; i<addressSplit.Length; i++)
-            {
-                if (addressSplit[i] != targetAddressSplit[i])
-                    bTargetIsThisWay = false;
-            }
+            bool bTargetIsThisWay = IsAddressThisWay(targetAddress);
 
-            if (bTargetIsThisWay && Children.Count-1 >= int.Parse(targetAddressSplit[addressSplit.Length]))
+            if (bTargetIsThisWay && Children.Count - 1 >= int.Parse(targetAddressSplit[addressSplit.Length]))
             {
                 return Children[int.Parse(targetAddressSplit[addressSplit.Length])].FindSubItem(targetAddress, ref pathHash);
             }

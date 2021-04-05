@@ -1,11 +1,9 @@
 ﻿using FileSystemModels.Common;
 using FileSystemModels.Exceptions;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FileSystemModels
 {
@@ -43,10 +41,11 @@ namespace FileSystemModels
 
         public void CreateNewSubDirectory()
         {
+            string baseName = "New Folder";
 
-            if (Info.GetDirectories("New Folder", SearchOption.TopDirectoryOnly).Length < 1)
+            if (Info.GetDirectories(baseName, SearchOption.TopDirectoryOnly).Length < 1)
             {
-                new DirectoryItem(Info.CreateSubdirectory("New Folder").FullName, this);
+                new DirectoryItem(Info.CreateSubdirectory(baseName).FullName, this);
             }
             else
             {
@@ -55,7 +54,7 @@ namespace FileSystemModels
                 foreach (DirectoryInfo dir in Info.GetDirectories())
                 {
                     List<string> splittedDirName = dir.Name.Split(" ").ToList();
-                    if (dir.Name.StartsWith("New Folder ") && Regex.IsMatch(splittedDirName[^1], @"[(]\d{1,}[)]"))
+                    if (dir.Name.StartsWith(baseName) && Regex.IsMatch(splittedDirName[^1], @"[(]\d{1,}[)]"))
                     {
                         itemCopyNumbers.Add(int.Parse(splittedDirName[^1].Trim(new char[] { '(', ')' })));
                     }
@@ -65,7 +64,7 @@ namespace FileSystemModels
                 {
                     if (!itemCopyNumbers.Any(x => x == dirnum))
                     {
-                        new DirectoryItem(Info.CreateSubdirectory("New Folder (" + dirnum + ")").Name, this);
+                        new DirectoryItem(Info.CreateSubdirectory(baseName + " (" + dirnum + ")").Name, this);
                         return;
                     }
                 }
@@ -167,7 +166,7 @@ namespace FileSystemModels
         {
             string dirName = Info.Name;
 
-            //Strip name from added copy tags to avoid naming them "Copy of Copy of..."
+            //strip name from added copy tags to avoid naming them "Copy of Copy of..."
             List<string> splittedDirName = dirName.Split(" ").ToList();
             if (splittedDirName.Count > 2 && splittedDirName[0] == "Copy" && splittedDirName[1] == "of")
             {
@@ -186,14 +185,15 @@ namespace FileSystemModels
                 }
             }
 
+            //create a new file with "Copy of x" name
             if (Info.Parent.GetDirectories("Copy of " + dirName, SearchOption.TopDirectoryOnly).Length < 1)
             {
                 return Path.Combine(Info.Parent.FullName, "Copy of " + dirName);
             }
             else
             {
+                //get the numbers from copy indexes
                 List<int> itemCopyNumbers = new();
-
                 foreach (DirectoryInfo dir in Info.Parent.GetDirectories())
                 {
                     splittedDirName = dir.Name.Split(" ").ToList();
@@ -203,6 +203,7 @@ namespace FileSystemModels
                     }
                 }
 
+                //find a number that isn't taken yet
                 for (int filenum = 2; filenum <= int.MaxValue; filenum++)
                 {
                     if (!itemCopyNumbers.Any(x => x == filenum))

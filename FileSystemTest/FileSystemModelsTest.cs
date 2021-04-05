@@ -3,11 +3,8 @@ using FileSystemModels;
 using FileSystemModels.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileSystemTest
 {
@@ -45,10 +42,10 @@ namespace FileSystemTest
             var searchterm3_add = root.Children[1].Children[0].Children[1].Address;
             var searchterm3_hsh = root.Children[1].Children[0].Children[1].GetPath().GetHashCode();
 
-            var result1 = root.FindSubItem(searchterm1_add,ref searchterm1_hsh);
+            var result1 = root.FindSubItem(searchterm1_add, ref searchterm1_hsh);
             var result2 = root.FindSubItem(searchterm2_add, ref searchterm2_hsh);
             var result3 = root.FindSubItem(searchterm3_add, ref searchterm3_hsh);
-            var nullresult = root.FindSubItem("0.0.0.0.0.0.0",ref searchterm3_hsh);
+            var nullresult = root.FindSubItem("0.0.0.0.0.0.0", ref searchterm3_hsh);
 
             Assert.AreEqual(searchitem1, result1);
             Assert.AreEqual(searchitem2, result2);
@@ -59,7 +56,7 @@ namespace FileSystemTest
         }
 
         [TestMethod]
-        public void DeleteTest()
+        public void DeleteDirectoryTest()
         {
             TestHelper testHelper = new();
             testHelper.SetUpTestDirectory();
@@ -70,7 +67,7 @@ namespace FileSystemTest
             testHelper.TestDirInfo.CreateSubdirectory("test" + 2).CreateSubdirectory("test2_1");
             File.CreateText(testHelper.TestDirInfo.FullName + "\\test2\\test2_1\\test1.txt").Close();
 
-            StreamWriter openFile =File.CreateText(testHelper.TestDirInfo.FullName + "\\test2\\test2_1\\test2.txt");
+            StreamWriter openFile = File.CreateText(testHelper.TestDirInfo.FullName + "\\test2\\test2_1\\test2.txt");
 
             testHelper.TestDirInfo.CreateSubdirectory("test" + 3);
 
@@ -79,13 +76,40 @@ namespace FileSystemTest
             DirectoryItem root = FileSystemManager.RootItem;
 
             Assert.IsFalse(root.Delete());
-            
+
             openFile.Close();
 
             Assert.IsTrue(root.Delete());
         }
 
         [TestMethod]
+        public void DeleteFileTest()
+        {
+            TestHelper testHelper = new();
+            testHelper.SetUpTestDirectory();
+
+            testHelper.TestDirInfo.CreateSubdirectory("test" + 1);
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test1\\test.txt").Close();
+
+            testHelper.TestDirInfo.CreateSubdirectory("test" + 2).CreateSubdirectory("test2_1");
+            File.CreateText(testHelper.TestDirInfo.FullName + "\\test2\\test2_1\\test1.txt").Close();
+
+            StreamWriter openFile = File.CreateText(testHelper.TestDirInfo.FullName + "\\test.txt");
+
+            testHelper.TestDirInfo.CreateSubdirectory("test" + 3);
+
+            FileSystemManager.MapRootItem(testHelper.TestDirInfo.FullName);
+
+            DirectoryItem root = FileSystemManager.RootItem;
+
+            Assert.IsFalse(root.Children.Where(x => x.Name == "test.txt").FirstOrDefault().Delete());
+
+            openFile.Close();
+
+            Assert.IsTrue(root.Children.Where(x => x.Name == "test.txt").FirstOrDefault().Delete());
+        }
+
+            [TestMethod]
         public void FileCopyTest()
         {
             TestHelper testHelper = new();
@@ -135,7 +159,7 @@ namespace FileSystemTest
 
             Assert.IsTrue(root.Children.Count == 4);
             Assert.IsTrue(root.Children.Where(x => x.Name == "Copy of test1 (3)").FirstOrDefault().Children[1].Children.Any(x => x.Name == "Copy of test (12).txt"));
-            Assert.IsTrue(root.Children.Any(x=>x.Name == "Copy of test1"));
+            Assert.IsTrue(root.Children.Any(x => x.Name == "Copy of test1"));
 
             testHelper.CleanUpTestDirectory();
         }
@@ -200,10 +224,10 @@ namespace FileSystemTest
             FileSystemManager.MapRootItem(testHelper.TestDirInfo.FullName);
             DirectoryItem root = FileSystemManager.RootItem;
 
-            root.Children.Where(x=>x.Name == "test.txt").FirstOrDefault().Rename("test2.txt");
+            root.Children.Where(x => x.Name == "test.txt").FirstOrDefault().Rename("test2.txt");
             Assert.IsTrue(root.Children.Any(x => x.Name == "test2.txt"));
 
-            Action RenameAction = delegate () { root.Children.Where(x => x.Name == "test2.txt").FirstOrDefault().Rename("test1.txt"); };
+            void RenameAction() { root.Children.Where(x => x.Name == "test2.txt").FirstOrDefault().Rename("test1.txt"); }
             Assert.ThrowsException<NameAlreadyTakenException>(RenameAction);
         }
 
@@ -224,7 +248,7 @@ namespace FileSystemTest
             root.Children[0].Rename("test1");
             Assert.IsTrue(root.Children[1].Name == "test1" && root.Children[1].Children.Count == 2);
 
-            Action RenameAction = delegate () { root.Children[1].Rename("test1"); };
+            void RenameAction() { root.Children[1].Rename("test1"); }
             Assert.ThrowsException<NameAlreadyTakenException>(RenameAction);
         }
     }

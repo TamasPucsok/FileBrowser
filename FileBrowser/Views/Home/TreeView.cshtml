@@ -1,10 +1,18 @@
 ﻿@using Kendo.Mvc.UI;
 
-    @(Html.Kendo().TreeView()
+@(Html.Kendo().TreeView()
                 .Name("treeview")
                .BindTo((IEnumerable<TreeViewItemModel>)ViewBag.inlineItemTreeData)
-               .Events(events => events
-                .Select("onSelect")
-
-                )
     )
+
+<style>
+    #treeview .k-sprite {
+        background-image: url("@Url.Content("~/Content/coloricons-sprite.png")");
+    }
+
+    .rootfolder { background-position: 0 0; }
+    .folder { background-position: 0 -16px; }
+    .pdf { background-position: 0 -32px; }
+    .html { background-position: 0 -48px; }
+    .image { background-position: 0 -64px; }
+</style>

@@ -1,18 +1,15 @@
 ﻿using FileBrowser.Common;
 using FileBrowser.Models;
+using FileSystemModels;
+using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
-using FileSystemModels;
-using Kendo.Mvc.UI;
 
 namespace FileBrowser.Controllers
 {
@@ -27,7 +24,8 @@ namespace FileBrowser.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.inlineItemTreeData = GetTreeViewItemData();
+            List<TreeViewItemModel> treeModel = GetTreeViewItemData();
+            ViewBag.inlineItemTreeData = treeModel;
             return View();
         }
 
@@ -107,25 +105,47 @@ namespace FileBrowser.Controllers
             return BadRequest();
         }
 
-        //public async Task<ActionResult> Download()
-        //{
-        //    FileInfo fInfo = new("E:\\Works\\Programming\\FileBrowser\\FileBrowser\\FileStorage\\CV.pdf");
-
-        //    var fPath = fInfo.FullName;
-
-        //    FileStream fstream = new FileStream(fPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        //    string mimeType = MimeTypes.GetMimeType(fPath);
-
-        //    if (mimeType == MimeTypes.FallbackMimeType)
-        //        return File(fstream, mimeType, fInfo.Name);
-        //    else
-        //        return File(fstream, mimeType);
-        //}
-
-        private List<TreeViewItemModel> GetTreeViewItemData()
+        public List<TreeViewItemModel> GetTreeViewItemData()
         {
             return FileSystemManager.RootItem.BuildTreeViewModel();
+        }
+
+        /**This is only a placeholder to test the download function*/
+        public ActionResult DownloadOpenable(bool bOpenInBrowser = true)
+        {
+            FileSystemItemBase item = FileSystemManager.RootItem.Children.Where(x => x.Name == "CV.pdf").FirstOrDefault();
+
+            item.ProcessDownload();
+
+            var fPath = item.GetPath();
+
+            FileStream fstream = new FileStream(fPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            string mimeType = MimeTypes.GetMimeType(fPath);
+
+            if (mimeType == MimeTypes.FallbackMimeType || !bOpenInBrowser)
+                return File(fstream, mimeType, item.Name);
+            else
+                return File(fstream, mimeType);
+        }
+
+        //This is only a placeholder to test the download function
+        public ActionResult DownloadNonOpenable(bool bOpenInBrowser = true)
+        {
+            FileSystemItemBase item = FileSystemManager.RootItem.Children.Where(x => x.Name == "GitHubDesktopSetup.exe").FirstOrDefault();
+
+            item.ProcessDownload();
+
+            var fPath = item.GetPath();
+
+            FileStream fstream = new FileStream(fPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            string mimeType = MimeTypes.GetMimeType(fPath);
+
+            if (mimeType == MimeTypes.FallbackMimeType || !bOpenInBrowser)
+                return File(fstream, mimeType, item.Name);
+            else
+                return File(fstream, mimeType);
         }
     }
 }

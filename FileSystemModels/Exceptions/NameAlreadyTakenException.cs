@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileSystemModels.Exceptions
 {
-    public class NameAlreadyTakenException:Exception
+    public class NameAlreadyTakenException : Exception
     {
     }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace FileBrowser.Models
 {
     public class ErrorViewModel

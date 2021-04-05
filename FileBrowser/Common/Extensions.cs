@@ -1,9 +1,6 @@
 ﻿using FileSystemModels;
 using Kendo.Mvc.UI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FileBrowser.Common
 {

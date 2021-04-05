@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace FileBrowser.Common
 
@@ -17,12 +13,12 @@ namespace FileBrowser.Common
         /// Returns the file storage location. Could be tied to a DB in case of user accounts or return it from a config file.
         /// For now it will just return the current directory for easier usage.
         /// </summary>
-        public static string GetFileStorageRootDirectory() 
+        public static string GetFileStorageRootDirectory()
         {
             //Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)
             //Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)
 
-            return Directory.GetCurrentDirectory() + "\\FileStorage"; 
+            return Directory.GetCurrentDirectory() + "\\FileStorage";
         }
     }
 }

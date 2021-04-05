@@ -1,11 +1,8 @@
 ﻿using FileSystemModels.Exceptions;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FileSystemModels
 {
@@ -56,8 +53,8 @@ namespace FileSystemModels
 
             if (undeletedChildren == 0)
             {
-                try 
-                { 
+                try
+                {
                     Info.Delete();
                 }
                 catch (IOException)
@@ -120,6 +117,7 @@ namespace FileSystemModels
         {
             string fileName = Path.GetFileNameWithoutExtension(Info.FullName);
 
+            //strip name from the copy naming additions to avoid constantly adding "copy of" at the beginning
             List<string> splittedFileName = fileName.Split(" ").ToList();
             if (splittedFileName.Count > 2 && splittedFileName[0] == "Copy" && splittedFileName[1] == "of")
             {
@@ -140,14 +138,15 @@ namespace FileSystemModels
 
             string fileExtension = Path.GetExtension(Info.FullName);
 
+            //create a new file with "Copy of x" name
             if (Info.Directory.GetFiles("Copy of " + fileName + fileExtension, SearchOption.TopDirectoryOnly).Length < 1)
             {
                 return Path.Combine(Info.DirectoryName, "Copy of " + fileName + fileExtension);
             }
             else
             {
+                //get the numbers from copy indexes
                 List<int> itemCopyNumbers = new();
-
                 foreach (FileInfo file in Info.Directory.GetFiles())
                 {
                     splittedFileName = Path.GetFileNameWithoutExtension(file.FullName).Split(" ").ToList();
@@ -157,6 +156,7 @@ namespace FileSystemModels
                     }
                 }
 
+                //find a number that isn't taken yet
                 for (int filenum = 2; filenum <= int.MaxValue; filenum++)
                 {
                     if (!itemCopyNumbers.Any(x => x == filenum))
